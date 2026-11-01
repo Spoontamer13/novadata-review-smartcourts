@@ -844,6 +844,7 @@ a.ccard:hover .cv img{transform:scale(1.04)}
 @media (max-width:860px){.hchip.c1{left:0;top:auto;bottom:6%}.hchip.c2{right:0;top:4%}.hchip.c3{display:none}.hchip b{font-size:17px}}
 @media (prefers-reduced-motion:reduce){.aurora i,.hchip,.spark i,.bull-shine,.hero .btn::after{animation:none!important}}
 
+.consent-label{display:flex!important;align-items:flex-start;gap:12px;font-size:14px!important;line-height:1.6;color:var(--ink-2)}.consent-label input{flex:0 0 auto;width:20px;height:20px;margin:2px 0 0;padding:0;accent-color:var(--ink)}.consent-label a,.legal-note a{text-decoration:underline;text-underline-offset:3px}.legal-note{margin:0}.ftr-legal{display:flex;flex-wrap:wrap;gap:12px 28px;padding-bottom:24px;font-size:14px}.ftr-legal a{color:var(--mint);text-decoration:underline;text-underline-offset:3px}
 </style>
 </head>
 <body>
@@ -1715,8 +1716,12 @@ a.ccard:hover .cv img{transform:scale(1.04)}
           <div class="f"><label for="fEmail">Почта</label><input id="fEmail" type="email" autocomplete="email" placeholder="name@company.ru"></div>
         </div>
         <div class="f"><label for="fTask">Задача или идея</label><textarea id="fTask" rows="4" placeholder="Например: отчёты по сменам собираем вручную, хотим видеть простои оборудования"></textarea></div>
-        <button class="btn" type="submit">Отправить заявку</button>
-        <span class="note">Нажимая кнопку, вы соглашаетесь на обработку персональных данных.</span>
+        <div class="f">
+          <label class="consent-label" for="fConsent"><input id="fConsent" name="consent" type="checkbox" required aria-describedby="eConsent"><span>Даю <a href="/legal/consent/" target="_blank" rel="noopener">согласие на обработку персональных данных</a> для ответа на мою заявку.</span></label>
+          <span class="err" id="eConsent" role="alert"></span>
+          <p class="note legal-note">Об обработке данных — в <a href="/legal/privacy/" target="_blank" rel="noopener">политике ООО «НОВА ДАТА»</a>.</p>
+        </div>
+        <button class="btn" type="submit">Подготовить заявку</button>
       </div>
       <div class="done" id="formDone" hidden>
         <span class="kicker">Заявка готова</span>
@@ -1747,6 +1752,7 @@ a.ccard:hover .cv img{transform:scale(1.04)}
     <div><b>ООО «НОВА ДАТА»</b><span>Разработка решений на данных и ИИ, инфраструктура Big Data</span><span>ИНН 5018223550, КПП 501801001, ОГРН 1265000012331</span><a href="https://www.rusprofile.ru/requisites/1265000012331" target="_blank" rel="noopener">Все реквизиты</a></div>
     <p class="addr">Юридический адрес: 141090, Московская обл., г. Королёв, мкр. Первомайский, 2-й Луговой пр-д, д. 6, к. 9</p>
   </div>
+  <div class="wrap ftr-legal"><a href="/legal/privacy/">Политика обработки персональных данных</a><a href="/legal/consent/">Согласие на обработку персональных данных</a></div>
   <div class="wrap ftr-copy">© 2026 NovaData. NOVA DATA® — зарегистрированный товарный знак (знак обслуживания) № 1263216.</div>
 </footer>
 
@@ -2152,8 +2158,10 @@ $('#form').addEventListener('submit',function(e){
   var name=$('#fName').value.trim(),ph=$('#fPhone').value.trim(),em=$('#fEmail').value.trim(),ok=true;
   $('#eName').textContent=name?'':'Напишите, как к вам обращаться'; if(!name) ok=false;
   $('#eContact').textContent=(ph||em)?'':'Оставьте телефон или почту, чтобы мы могли ответить'; if(!ph&&!em) ok=false;
-  if(!ok) return;
+  var consent=$('#fConsent').checked; $('#eConsent').textContent=consent?'':'Для подготовки заявки нужно дать согласие'; if(!consent) ok=false;
+  if(!ok){ (!name?$('#fName'):!ph&&!em?$('#fPhone'):$('#fConsent')).focus(); return; }
   var txt='Тема: '+topic+'\nИмя: '+name+'\nКомпания: '+($('#fOrg').value.trim()||'—')+'\nТелефон: '+(ph||'—')+'\nПочта: '+(em||'—')+'\n\n'+($('#fTask').value.trim()||'');
+  txt+='\n\nСогласие на обработку персональных данных для ответа на заявку: дано.\nДокумент: https://smartcourts.ru/legal/consent/ (редакция 01.11.2026).\nПолитика: https://smartcourts.ru/legal/privacy/\nВремя подготовки: '+new Date().toISOString();
   $('#doneText').textContent=txt;
   $('#mailBtn').href='mailto:info@novadata.ru?subject='+encodeURIComponent('Заявка с сайта: '+topic)+'&body='+encodeURIComponent(txt);
   $('#formBody').hidden=true; $('#formDone').hidden=false;
